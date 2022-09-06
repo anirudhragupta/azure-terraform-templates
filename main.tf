@@ -54,6 +54,7 @@ resource "azurerm_storage_blob" "temptxt" {
   storage_account_name = azurerm_storage_account.first_storageacc.name //r
   storage_container_name = azurerm_storage_container.container01.name //r
   type = "Block" //r
+  source = "temp.txt"
 
   depends_on = [
     azurerm_storage_container.container01
