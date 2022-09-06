@@ -9,14 +9,53 @@ terraform {
 
 provider "azurerm" {
   # Configuration options
-  subscription_id = "7c492b51-9b31-4cee-a661-c53899cdc68d"
-  tenant_id = "e079b1e3-d30d-412d-9f38-0c1f1b2be790"
-  client_id = "e190b5cf-a1de-4810-bb8a-e6e35ac1b355"
-  client_secret = "BLo8Q~z0wCk4.RzNcOJhKjHO2Wallchp~wv~dcq0"
+  # subscription_id = ""
+  # tenant_id = ""
+  # client_id = ""
+  # client_secret = ""
   features {}
 }
 
 resource "azurerm_resource_group" "testrg" {
-    name = "test-rg"
-    location = "Central India"
+    name = "terraform_rg" //r
+    location = "centralindia" //r
+
+    tags = {
+      "environment" = "learning"
+    }
+}
+
+resource "azurerm_storage_account" "first_storageacc" {
+  name = "stgplayacc100" //r
+  resource_group_name = "terraform_rg" //r
+  location = "central india" //r
+  account_kind = "StorageV2"
+  account_tier = "Standard" //r
+  account_replication_type = "LRS" //r
+  access_tier = "Hot"
+
+  depends_on = [
+    azurerm_resource_group.testrg
+  ]
+}
+
+resource "azurerm_storage_container" "container01" {
+  name = "container01" //r
+  storage_account_name = "stgplayacc100" //r
+  container_access_type = "private"
+
+  depends_on = [
+    azurerm_storage_account.first_storageacc
+  ]
+}
+
+resource "azurerm_storage_blob" "temptxt" {
+  name = "temp.txt" //r
+  storage_account_name = azurerm_storage_account.first_storageacc.name //r
+  storage_container_name = azurerm_storage_container.container01.name //r
+  type = "Block" //r
+
+  depends_on = [
+    azurerm_storage_container.container01
+  ]
 }
